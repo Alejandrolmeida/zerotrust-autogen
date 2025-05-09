@@ -2,7 +2,7 @@
 
 **Solución multi-agente Magentic-One para desplegar y securizar Enterprise Landing Zones en Azure aplicando Zero Trust – sin Entra ID Premium.**
 
-![Global Azure Madrid](https://globalazure.es/assets/images/logo-ga.svg)
+![Global Azure Logo](https://blog.globalazure.net/portals/0/images/GlobalAzure2025-500.png)
 
 > Demo oficial para la sesión **"Securizando Azure con AI Foundry y Zero Trust"** – Global Azure 2025 (Madrid) por **Alejandro Almeida, Microsoft MVP Azure & AI**.
 
