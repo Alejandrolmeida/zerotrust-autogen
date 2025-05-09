@@ -23,16 +23,32 @@ import asyncio, os, textwrap, sys
 from dotenv import load_dotenv
 
 # Añadir el directorio raíz al path de Python
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_dir)
+
+# ────────── 1)  Cargar variables de entorno ──────────
+dotenv_path = os.path.join(root_dir, '.env')
+print(f"\n[DEBUG] Cargando variables de entorno desde: {dotenv_path}")
+print(f"[DEBUG] El archivo existe: {os.path.exists(dotenv_path)}")
+load_dotenv(dotenv_path=dotenv_path)
+
+# Verificar si las variables críticas se cargaron correctamente
+critical_vars = ["AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_KEY", "AZURE_OPENAI_DEPLOYMENT_NAME", 
+                "GITHUB_TOKEN", "GITHUB_OWNER"]
+print("[DEBUG] Estado de variables críticas:")
+for var in critical_vars:
+    value = os.getenv(var)
+    if value:
+        masked = value[:4] + "..." + value[-4:] if len(value) > 8 else "****"
+        print(f"[DEBUG] ✅ {var} cargada: {masked}")
+    else:
+        print(f"[DEBUG] ❌ {var} no encontrada")
 
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_agentchat.messages import TextMessage
 from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
 from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
-
-# ────────── 1)  Cargar variables de entorno ──────────
-load_dotenv()
 
 # ────────── 2)  Crear LLM "coordinador" ──────────
 llm_client = AzureOpenAIChatCompletionClient(
@@ -75,7 +91,8 @@ async def build_agents():
     # GitHub Agent
     github_server_params = StdioServerParams(
         command=sys.executable,
-        args=[github_server_script]
+        args=[github_server_script],
+        stdin="PIPE"
     )
     github_tools = await mcp_server_tools(github_server_params)
     github_agent = AssistantAgent(
@@ -90,7 +107,8 @@ Eres especialista en automatizar la creación de Landing Zones en Azure.""",
     # Posture Agent
     posture_server_params = StdioServerParams(
         command=sys.executable,
-        args=[posture_server_script]
+        args=[posture_server_script],
+        stdin="PIPE"
     )
     posture_tools = await mcp_server_tools(posture_server_params)
     posture_agent = AssistantAgent(
@@ -105,7 +123,8 @@ Tu especialidad es identificar problemas de seguridad y recomendar soluciones.""
     # Policy Agent
     policy_server_params = StdioServerParams(
         command=sys.executable,
-        args=[policy_server_script]
+        args=[policy_server_script],
+        stdin="PIPE"
     )
     policy_tools = await mcp_server_tools(policy_server_params)
     policy_agent = AssistantAgent(

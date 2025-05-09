@@ -1,25 +1,30 @@
 """
-Tools GitHub REST v3 para:
+Tools GitHub REST v3 para:
   • create_branch_from_default
   • commit_files_to_branch
   • create_pull_request
-  • trigger_workflow_run  (GitHub Actions workflow_dispatch)
+  • trigger_workflow_run  (GitHub Actions workflow_dispatch)
 
-Requiere en .env
-  GITHUB_PAT=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Requiere en .env
+  GITHUB_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (o GITHUB_PAT)
   GITHUB_OWNER=my‑org‑or‑user
 """
 from __future__ import annotations
-import os, base64, requests, json
+import sys, os, base64, requests, json
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 load_dotenv()
 
+# Añadir el directorio raíz al path de Python
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_dir)
+
 API   = "https://api.github.com"
 OWNER = os.getenv("GITHUB_OWNER")
-TOKEN = os.getenv("GITHUB_PAT")
+# Permitir GITHUB_TOKEN o GITHUB_PAT
+TOKEN = os.getenv("GITHUB_PAT") or os.getenv("GITHUB_TOKEN")
 if not (OWNER and TOKEN):
-    raise ValueError("Faltan GITHUB_OWNER o GITHUB_PAT en .env")
+    raise ValueError("Faltan GITHUB_OWNER o GITHUB_TOKEN/GITHUB_PAT en .env")
 
 def _hdr() -> dict:
     return {"Authorization": f"Bearer {TOKEN}",
@@ -44,7 +49,7 @@ def create_branch_from_default(repo:str, new_branch:str)->dict:
 def commit_files_to_branch(repo:str, branch:str,
                            files:dict[str,str], commit_msg:str)->dict:
     # files = { path : raw‑content }
-    # 1) obtener último tree sha
+    # 1) obtener último tree sha
     head = requests.get(f"{API}/repos/{OWNER}/{repo}/git/ref/heads/{branch}",
                         headers=_hdr(),timeout=15).json()
     base_tree = head["object"]["sha"]
