@@ -1,0 +1,48 @@
+Traceback (most recent call last):
+  File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 19, in <module>
+    @mcp.tool(name="create_branch", description="Crea una rama desde el branch por defecto.")
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/server.py", line 380, in decorator
+    self.add_tool(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/server.py", line 336, in add_tool
+    self._tool_manager.add_tool(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/tools/tool_manager.py", line 42, in add_tool
+    tool = Tool.from_function(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/tools/base.py", line 63, in from_function
+    if issubclass(param.annotation, Context):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen abc>", line 123, in __subclasscheck__
+TypeError: issubclass() arg 1 must be a class
+Traceback (most recent call last):
+  File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/policy_server.py", line 18, in <module>
+    @mcp.tool(name="validate_policy_json", description="Valida sintaxis básica de un Azure Policy JSON.")
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/server.py", line 380, in decorator
+    self.add_tool(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/server.py", line 336, in add_tool
+    self._tool_manager.add_tool(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/tools/tool_manager.py", line 42, in add_tool
+    tool = Tool.from_function(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/tools/base.py", line 63, in from_function
+    if issubclass(param.annotation, Context):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen abc>", line 123, in __subclasscheck__
+TypeError: issubclass() arg 1 must be a class
+Traceback (most recent call last):
+  File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/posture_server.py", line 22, in <module>
+    @mcp.tool(name="query_resource_graph", description="Ejecución libre de Azure Resource Graph (Kusto-like).")
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/server.py", line 380, in decorator
+    self.add_tool(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/server.py", line 336, in add_tool
+    self._tool_manager.add_tool(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/tools/tool_manager.py", line 42, in add_tool
+    tool = Tool.from_function(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/mcp/server/fastmcp/tools/base.py", line 63, in from_function
+    if issubclass(param.annotation, Context):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen abc>", line 123, in __subclasscheck__
+TypeError: issubclass() arg 1 must be a class

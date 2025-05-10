@@ -3,52 +3,73 @@
 MCP‑Server – Herramientas GitHub para 'Landing Zone Express'.
 Requiere en .env:  GITHUB_PAT, GITHUB_OWNER
 """
-from __future__ import annotations
-import asyncio, json, textwrap, sys, os
-from typing import List
+import os, sys
+from fastapi import FastAPI
+from mcp.server.fastmcp import FastMCP
 
-# Añadir el directorio raíz al path de Python
-current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
-sys.path.append(root_dir)
+# Ajustar el path para importar mcp_tools
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import mcp_tools.github_tools as gh
 
-from mcp.server import Server
-from mcp.server.stdio import stdio_server
-from mcp.types import Tool, TextContent, ErrorData, INVALID_PARAMS, INTERNAL_ERROR
-from mcp.shared.exceptions import McpError
+# Crear dos instancias idénticas para montar en /mcp y /mcp/
+mcp = FastMCP("GitHub MCP Server", stateless_http=True)
 
-# Importar directamente desde el directorio raíz
-from mcp_tools.github_tools import get_github_tools
+# Solución avanzada: charset regex
+# Creamos un patrón regex que acepte ambas rutas (con o sin barra final)
+import re
+from fastapi.routing import APIRoute
 
-TOOLS    = get_github_tools()
-TOOL_MAP = {t["name"]: t for t in TOOLS}
+# Registrar herramientas en ambas instancias FastMCP
+@mcp.tool(name="create_branch", description="Crea una rama desde el branch por defecto.")
+def create_branch(repo: str, new_branch: str) -> dict:
+    return gh.create_branch_from_default(repo, new_branch)
 
-async def serve() -> None:
-    s = Server("mcp-github")
+@mcp.tool(name="commit_files", description="Añade / actualiza ficheros en una rama.")
+def commit_files(repo: str, branch: str, files: dict, message: str) -> dict:
+    return gh.commit_files_to_branch(repo, branch, files, message)
 
-    @s.list_tools()
-    async def _tools() -> List[Tool]:
-        return [Tool(d["name"], d["description"], d["parameters"]) for d in TOOLS]
+@mcp.tool(name="create_pull_request", description="Abre un PR entre dos ramas.")
+def create_pr(repo: str, head: str, base: str, title: str, body: str = "") -> dict:
+    return gh.create_pull_request(repo, head, base, title, body)
 
-    @s.call_tool()
-    async def _call(name: str, arguments: dict):
-        try:
-            if name not in TOOL_MAP:
-                raise McpError(ErrorData(code=INVALID_PARAMS, message=f"Tool desconocida: {name}"))
-            result = TOOL_MAP[name]["handler"](arguments or {})
-
-            text = result if isinstance(result, str) \
-                   else textwrap.indent(json.dumps(result, indent=2, ensure_ascii=False), "  ")
-            return [TextContent(type="text", text=text)]
-
-        except McpError:
-            raise
-        except Exception as exc:
-            raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(exc)))
-
-    opts = s.create_initialization_options()
-    async with stdio_server() as (r, w):
-        await s.run(r, w, opts, raise_exceptions=True)
+@mcp.tool(name="trigger_workflow", description="Lanza manualmente un workflow_dispatch.")
+def trigger_workflow(repo: str, workflow: str, ref: str, inputs: dict = None) -> dict:
+    if inputs is None:
+        inputs = {}
+    return gh.trigger_workflow_run(repo, workflow, ref, inputs)
 
 if __name__ == "__main__":
-    asyncio.run(serve())
+    port = int(os.environ.get("MCP_GITHUB_PORT", 8001))
+    app = FastAPI()
+    
+    # Montar el MCP Server en /mcp
+    app.mount("/mcp", mcp.streamable_http_app())
+    
+    # Middleware para manejar /mcp/
+    from fastapi import Request, status
+    from fastapi.responses import Response
+    from starlette.middleware.base import BaseHTTPMiddleware
+
+    class MCPSlashMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: Request, call_next):
+            # Si es una petición a /mcp/ (con barra final)
+            if request.url.path == "/mcp/":
+                # Reusar el mismo app montado en /mcp
+                mcp_app = mcp.streamable_http_app()
+                # Procesa la petición con el mismo handler de /mcp
+                return await mcp_app(request.scope, request._receive, request._send)
+            
+            # Para cualquier otra URL, continuar con el flujo normal
+            return await call_next(request)
+            
+    # Agregar el middleware
+    app.add_middleware(MCPSlashMiddleware)
+    
+    # Ruta raíz para información
+    @app.get("/", include_in_schema=False)
+    async def root():
+        return Response("MCP server disponible en /mcp", status_code=200)
+
+    print(f"[MCP-GitHub] FastAPI server running on http://localhost:{port}/mcp")
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=port)

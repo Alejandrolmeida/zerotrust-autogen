@@ -3,49 +3,58 @@
 MCP‑Server – Herramientas 'Policy‑as‑Prompt'.
 .env: TENANT_ID, CLIENT_ID, CLIENT_SECRET, SUBSCRIPTION_ID
 """
-from __future__ import annotations
-import asyncio, json, textwrap, sys, os
-from typing import List
+import os, sys
+from fastapi import FastAPI
+from mcp.server.fastmcp import FastMCP
 
-# Añadir el directorio raíz al path de Python
-current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
-sys.path.append(root_dir)
+# Ajustar el path para importar mcp_tools
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from mcp_tools.policy_tools import validate_policy, assign_policy
 
-from mcp.server import Server
-from mcp.server.stdio import stdio_server
-from mcp.types import Tool, TextContent, ErrorData, INVALID_PARAMS, INTERNAL_ERROR
-from mcp.shared.exceptions import McpError
+# Crear instancia de FastMCP
+mcp = FastMCP("Policy MCP Server", stateless_http=True)
 
-from mcp_tools.policy_tools import get_policy_tools
+# Registrar herramientas
+@mcp.tool(name="validate_policy_json", description="Valida sintaxis básica de un Azure Policy JSON.")
+def validate_policy_json(policy: dict) -> dict:
+    return validate_policy(policy)
 
-TOOLS    = get_policy_tools()
-TOOL_MAP = {t["name"]: t for t in TOOLS}
-
-async def serve() -> None:
-    s = Server("mcp-policy")
-
-    @s.list_tools()
-    async def _tools() -> List[Tool]:
-        return [Tool(d["name"], d["description"], d["parameters"]) for d in TOOLS]
-
-    @s.call_tool()
-    async def _call(name: str, arguments: dict):
-        try:
-            if name not in TOOL_MAP:
-                raise McpError(ErrorData(code=INVALID_PARAMS, message=f"Tool desconocida: {name}"))
-            result = TOOL_MAP[name]["handler"](arguments or {})
-            text   = result if isinstance(result, str) \
-                     else textwrap.indent(json.dumps(result, indent=2, ensure_ascii=False), "  ")
-            return [TextContent(type="text", text=text)]
-        except McpError:
-            raise
-        except Exception as exc:
-            raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(exc)))
-
-    opts = s.create_initialization_options()
-    async with stdio_server() as (r, w):
-        await s.run(r, w, opts, raise_exceptions=True)
+@mcp.tool(name="assign_policy", description="Asigna (o reemplaza) un Azure Policy en el scope indicado.")
+def assign_policy_tool(policy: dict, scope: str, name: str = "") -> dict:
+    return assign_policy(policy, scope, name)
 
 if __name__ == "__main__":
-    asyncio.run(serve())
+    port = int(os.environ.get("MCP_POLICY_PORT", 8002))
+    app = FastAPI()
+    
+    # Montar el MCP Server en /mcp
+    app.mount("/mcp", mcp.streamable_http_app())
+    
+    # Middleware para manejar /mcp/
+    from fastapi import Request, status
+    from fastapi.responses import Response
+    from starlette.middleware.base import BaseHTTPMiddleware
+
+    class MCPSlashMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: Request, call_next):
+            # Si es una petición a /mcp/ (con barra final)
+            if request.url.path == "/mcp/":
+                # Reusar el mismo app montado en /mcp
+                mcp_app = mcp.streamable_http_app()
+                # Procesa la petición con el mismo handler de /mcp
+                return await mcp_app(request.scope, request._receive, request._send)
+            
+            # Para cualquier otra URL, continuar con el flujo normal
+            return await call_next(request)
+            
+    # Agregar el middleware
+    app.add_middleware(MCPSlashMiddleware)
+    
+    # Ruta raíz para información
+    @app.get("/", include_in_schema=False)
+    async def root():
+        return Response("MCP server disponible en /mcp", status_code=200)
+
+    print(f"[MCP-Policy] FastAPI server running on http://localhost:{port}/mcp")
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=port)

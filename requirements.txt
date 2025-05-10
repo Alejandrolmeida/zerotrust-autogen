@@ -1,7 +1,7 @@
 # Core
 mcp
 autogen-agentchat
-autogen-ext[openai,azure,mcp]
+autogen-ext[azure,mcp]
 openai>=1.12.0
 pyautogen[teachable]==0.2.9
 flaml[automl]>=1.8.0
@@ -11,6 +11,8 @@ gitpython
 python-dateutil
 pydantic
 PyYAML
+fastapi 
+uvicorn
 
 # Azure SDK (demo 02 & 03)
 azure-identity

@@ -1,0 +1,280 @@
+INFO:     Started server process [870424]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+[MCP-GitHub] FastAPI server running on http://localhost:8001/mcp
+INFO:     127.0.0.1:44252 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40896 - "GET /mcp HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:38208 - "GET /mcp/ HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 76, in collapse_excgroups
+  |     yield
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 178, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    |     raise exc
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |                                    ^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    |     raise exc
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 60, in dispatch
+    |     return await mcp_app(request.scope, request._receive, request._send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 182, in __call__
+    |     await response(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/responses.py", line 149, in __call__
+    |     await send(
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/requests.py", line 195, in empty_send
+    |     raise RuntimeError("Send channel has not been made available")
+    | RuntimeError: Send channel has not been made available
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 60, in dispatch
+    return await mcp_app(request.scope, request._receive, request._send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 182, in __call__
+    await response(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/responses.py", line 149, in __call__
+    await send(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/requests.py", line 195, in empty_send
+    raise RuntimeError("Send channel has not been made available")
+RuntimeError: Send channel has not been made available
+INFO:     127.0.0.1:42816 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42832 - "GET /mcp HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:42832 - "GET /mcp/ HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 76, in collapse_excgroups
+  |     yield
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 178, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    |     raise exc
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |                                    ^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    |     raise exc
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 60, in dispatch
+    |     return await mcp_app(request.scope, request._receive, request._send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 182, in __call__
+    |     await response(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/responses.py", line 149, in __call__
+    |     await send(
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/requests.py", line 195, in empty_send
+    |     raise RuntimeError("Send channel has not been made available")
+    | RuntimeError: Send channel has not been made available
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 60, in dispatch
+    return await mcp_app(request.scope, request._receive, request._send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 182, in __call__
+    await response(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/responses.py", line 149, in __call__
+    await send(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/requests.py", line 195, in empty_send
+    raise RuntimeError("Send channel has not been made available")
+RuntimeError: Send channel has not been made available
+INFO:     127.0.0.1:39656 - "GET /mcp HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:39656 - "GET /mcp/ HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 76, in collapse_excgroups
+  |     yield
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 178, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    |     raise exc
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |                                    ^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    |     raise exc
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 60, in dispatch
+    |     return await mcp_app(request.scope, request._receive, request._send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 182, in __call__
+    |     await response(scope, receive, send)
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/responses.py", line 149, in __call__
+    |     await send(
+    |   File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/requests.py", line 195, in empty_send
+    |     raise RuntimeError("Send channel has not been made available")
+    | RuntimeError: Send channel has not been made available
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/source/github/alejandrolmeida/zerotrust-autogen/mcp_servers/github_server.py", line 60, in dispatch
+    return await mcp_app(request.scope, request._receive, request._send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/middleware/errors.py", line 182, in __call__
+    await response(scope, receive, send)
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/responses.py", line 149, in __call__
+    await send(
+  File "/home/almeida/miniconda3/envs/autogen/lib/python3.12/site-packages/starlette/requests.py", line 195, in empty_send
+    raise RuntimeError("Send channel has not been made available")
+RuntimeError: Send channel has not been made available

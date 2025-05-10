@@ -48,7 +48,8 @@ from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_agentchat.messages import TextMessage
 from autogen_ext.models.openai import AzureOpenAIChatCompletionClient
-from autogen_ext.tools.mcp import StdioServerParams, mcp_server_tools
+# Cambiar importación a mcp_server_tools
+from autogen_ext.tools.mcp import mcp_server_tools, SseServerParams
 
 # ────────── 2)  Crear LLM "coordinador" ──────────
 llm_client = AzureOpenAIChatCompletionClient(
@@ -88,13 +89,12 @@ policy_server_script = os.path.join(current_dir, "mcp_servers", "policy_server.p
 
 # ────────── 5)  Crear y configurar agentes ──────────
 async def build_agents():
-    # GitHub Agent
-    github_server_params = StdioServerParams(
-        command=sys.executable,
-        args=[github_server_script],
-        stdin="PIPE"
-    )
-    github_tools = await mcp_server_tools(github_server_params)
+    # URL para el servidor MCP Combinado que tiene todas las herramientas
+    # Usamos el nuevo puerto 8765 para evitar conflictos
+    combined_server_url = "http://localhost:8765/mcp"
+    
+    # GitHub Agent - conectado al servidor combinado
+    github_tools = await mcp_server_tools(SseServerParams(url=combined_server_url, headers={"accept": "text/event-stream"}))
     github_agent = AssistantAgent(
         name="github_agent",
         system_message="""Eres un experto en DevOps e infraestructura como código.
@@ -104,13 +104,8 @@ Eres especialista en automatizar la creación de Landing Zones en Azure.""",
         tools=github_tools
     )
 
-    # Posture Agent
-    posture_server_params = StdioServerParams(
-        command=sys.executable,
-        args=[posture_server_script],
-        stdin="PIPE"
-    )
-    posture_tools = await mcp_server_tools(posture_server_params)
+    # Posture Agent - conectado al servidor combinado
+    posture_tools = await mcp_server_tools(SseServerParams(url=combined_server_url))
     posture_agent = AssistantAgent(
         name="posture_agent",
         system_message="""Eres un experto en seguridad y postura de Azure.
@@ -120,13 +115,8 @@ Tu especialidad es identificar problemas de seguridad y recomendar soluciones.""
         tools=posture_tools
     )
 
-    # Policy Agent
-    policy_server_params = StdioServerParams(
-        command=sys.executable,
-        args=[policy_server_script],
-        stdin="PIPE"
-    )
-    policy_tools = await mcp_server_tools(policy_server_params)
+    # Policy Agent - conectado al servidor combinado
+    policy_tools = await mcp_server_tools(SseServerParams(url=combined_server_url))
     policy_agent = AssistantAgent(
         name="policy_agent",
         system_message="""Eres un experto en Zero Trust y Azure Policy.
