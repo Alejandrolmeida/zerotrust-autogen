@@ -44,9 +44,9 @@
           │  DeployAgent     │  │ PolicyAgent│ │  │  MonitorAgent     │
           │  (Bicep/CLI)     │  │ (Policy &  │ │  │ (Azure Monitor)   │
           └────────┬─────────┘  │  RBAC)     │ │  └──────────┬────────┘
-                   │            └───┬────────┘ │             │
-          ┌────────▼─────────┐      │          │    ┌────────▼─────────┐
-          │ Azure Resources  │◀────┘           └──▶│  Markdown Report │
+                   │            └─────┬──────┘ │             │
+          ┌────────▼─────────┐        │        │    ┌────────▼─────────┐
+          │ Azure Resources  │◀──-────┘        └-──▶│  Markdown Report │
           │  (Landing Zone)  │                      │  + GitHub Issue  │
           └──────────────────┘                      └──────────────────┘
 ```
@@ -112,6 +112,7 @@ Configura valores persistentes con [direnv](https://direnv.net/) o añade un fic
 landing-zone-express/
 ├── main.py            # CLI
 ├── agents/            # Orchestrator + agentes
+├── tools/             # Herramientas para agentes
 ├── infra/             # Plantillas Bicep + políticas
 ├── reports/           # Informes generados (git-ignored)
 ├── tests/             # Pytest-asyncio
