@@ -13,7 +13,8 @@ from typing import Dict, List, Any
 # Importamos las herramientas de Bicep
 from tools.bicep_tools import (
     generate_landing_zone,
-    deploy_landing_zone
+    deploy_landing_zone,
+    generate_deployment_script
 )
 
 # Definición del agente Bicep
@@ -30,7 +31,7 @@ def create_bicep_agent(llm_client: AzureOpenAIChatCompletionClient, bicep_tools:
     """
     # Si no se proporcionan herramientas, usar las predeterminadas
     if bicep_tools is None:
-        bicep_tools = [generate_landing_zone, deploy_landing_zone]
+        bicep_tools = [generate_landing_zone, deploy_landing_zone, generate_deployment_script]
     
     # Crear el agente
     bicep_agent = AssistantAgent(

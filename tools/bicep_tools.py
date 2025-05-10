@@ -38,83 +38,66 @@ def generate_landing_zone(
     Returns:
         Dict con información sobre los archivos generados
     """
-    # Asegurarse de que la carpeta Infra existe
     os.makedirs(INFRA_DIR, exist_ok=True)
     
-    # Lista para almacenar los archivos generados
     generated_files = []
     
-    # 1. Generar archivo main.bicep
-    main_bicep_content = _generate_main_bicep(
-        organization_name=organization_name,
-        environment=environment,
-        regions=regions,
-        include_networking=include_networking,
-        include_security=include_security,
-        include_governance=include_governance
-    )
-    
+    # Generar archivo main.bicep
     main_bicep_path = INFRA_DIR / "main.bicep"
     with open(main_bicep_path, "w") as f:
-        f.write(main_bicep_content)
-    generated_files.append(str(main_bicep_path))
+        f.write(_generate_main_bicep(
+            organization_name=organization_name,
+            environment=environment,
+            regions=regions,
+            include_networking=include_networking,
+            include_security=include_security,
+            include_governance=include_governance
+        ))
+    generated_files.append(main_bicep_path)
     
-    # 2. Generar archivo de parámetros
-    params_content = _generate_parameters_file(
-        organization_name=organization_name,
-        environment=environment,
-        regions=regions
-    )
-    
+    # Generar archivo de parámetros
     params_path = INFRA_DIR / "main.parameters.json"
     with open(params_path, "w") as f:
-        f.write(params_content)
-    generated_files.append(str(params_path))
+        f.write(_generate_parameters_file(
+            organization_name=organization_name,
+            environment=environment,
+            regions=regions
+        ))
+    generated_files.append(params_path)
     
-    # 3. Generar módulos específicos según las opciones
+    # Generar módulos específicos
     if include_networking:
-        network_content = _generate_networking_module(regions)
         network_path = INFRA_DIR / "modules" / "networking.bicep"
         os.makedirs(INFRA_DIR / "modules", exist_ok=True)
         with open(network_path, "w") as f:
-            f.write(network_content)
-        generated_files.append(str(network_path))
+            f.write(_generate_networking_module(regions))
+        generated_files.append(network_path)
     
     if include_security:
-        security_content = _generate_security_module()
         security_path = INFRA_DIR / "modules" / "security.bicep"
         os.makedirs(INFRA_DIR / "modules", exist_ok=True)
         with open(security_path, "w") as f:
-            f.write(security_content)
-        generated_files.append(str(security_path))
+            f.write(_generate_security_module())
+        generated_files.append(security_path)
     
     if include_governance:
-        governance_content = _generate_governance_module(organization_name, environment)
         governance_path = INFRA_DIR / "modules" / "governance.bicep"
         os.makedirs(INFRA_DIR / "modules", exist_ok=True)
         with open(governance_path, "w") as f:
-            f.write(governance_content)
-        generated_files.append(str(governance_path))
+            f.write(_generate_governance_module(organization_name, environment))
+        generated_files.append(governance_path)
     
-    # 4. Generar archivo README con instrucciones
-    readme_content = _generate_readme(organization_name, environment)
-    readme_path = INFRA_DIR / "README.md"
-    with open(readme_path, "w") as f:
-        f.write(readme_content)
-    generated_files.append(str(readme_path))
-    
-    # 5. Generar script de despliegue
-    deploy_script = _generate_deploy_script(organization_name, environment)
-    deploy_script_path = INFRA_DIR / "deploy.sh"
+    # Generar script de despliegue
+    deploy_script_path = INFRA_DIR / "deploy_landing_zone.sh"
     with open(deploy_script_path, "w") as f:
-        f.write(deploy_script)
-    # Hacer el script ejecutable
+        f.write(generate_deployment_script())
     os.chmod(deploy_script_path, 0o755)
-    generated_files.append(str(deploy_script_path))
+    generated_files.append(deploy_script_path)
     
+    # Retornar solo los nombres de los archivos generados
     return {
         "message": "Landing Zone generada con éxito",
-        "generated_files": generated_files,
+        "generated_files": [str(file.name) for file in generated_files],
         "organization": organization_name,
         "environment": environment,
         "infra_dir": str(INFRA_DIR)
@@ -203,6 +186,40 @@ def deploy_landing_zone(
         "results": results,
         "what_if": what_if
     }
+
+
+def generate_deployment_script() -> str:
+    """
+    Genera un script de Azure CLI para desplegar la Landing Zone.
+
+    Returns:
+        Ruta del archivo del script generado.
+    """
+    script_content = """#!/bin/bash
+# Script para desplegar la Landing Zone
+
+set -e
+
+# Variables
+RESOURCE_GROUP="landing-zone-rg"
+LOCATION="westeurope"
+
+# Crear grupo de recursos
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# Desplegar plantillas Bicep
+az deployment group create \
+  --resource-group $RESOURCE_GROUP \
+  --template-file main.bicep \
+  --parameters @main.parameters.json
+"""
+
+    script_path = INFRA_DIR / "deploy_landing_zone.sh"
+    with open(script_path, "w") as f:
+        f.write(script_content)
+    os.chmod(script_path, 0o755)  # Hacer ejecutable el script
+
+    return str(script_path)
 
 
 # Funciones auxiliares privadas
