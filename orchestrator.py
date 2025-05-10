@@ -14,6 +14,7 @@ def setup_team(
     github_agent: AssistantAgent,
     policy_agent: AssistantAgent,
     posture_agent: AssistantAgent,
+    bicep_agent: AssistantAgent,
     llm_client: AzureOpenAIChatCompletionClient
 ) -> SelectorGroupChat:
     """Configura el equipo de agentes para la conversación"""
@@ -22,18 +23,19 @@ def setup_team(
     # Prompt para el selector que decide qué agente debe responder
     selector_prompt = """
     Lee SOLO el último mensaje del usuario ⬇️ y contesta con **un** nombre:
-    github_agent · policy_agent · posture_agent
+    github_agent · policy_agent · posture_agent · bicep_agent
 
     • github_agent  - temas: GitHub, repos, ramas, PR, workflows.
     • policy_agent  - temas: Azure Policy, definición, asignación, cumplimiento.
     • posture_agent - temas: Secure Score, recomendaciones, Resource Graph.
+    • bicep_agent   - temas: Azure Landing Zones, IaC con Bicep, despliegue de infraestructura.
 
     Si no encaja, devuelve: unknown
     """
 
     return SelectorGroupChat(
-        participants=[user_proxy, github_agent, policy_agent, posture_agent],
+        participants=[user_proxy, github_agent, policy_agent, posture_agent, bicep_agent],
         model_client=llm_client,
         selector_prompt=selector_prompt,
-        max_turns=3,
+        max_turns=1,
     )

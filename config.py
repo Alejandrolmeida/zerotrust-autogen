@@ -54,6 +54,7 @@ def setup_tools() -> Dict[str, List[Any]]:
     from tools import github_tools as gh
     from tools import policy_tools as pol
     from tools import posture_tools as pos
+    from tools import bicep_tools as bicep
     
     tools = {
         "github": [
@@ -74,6 +75,10 @@ def setup_tools() -> Dict[str, List[Any]]:
             pos.get_secure_score, 
             pos.list_posture_recommendations,
             pos.get_detailed_recommendation
+        ],
+        "bicep": [
+            bicep.generate_landing_zone,
+            bicep.deploy_landing_zone
         ]
     }
     
