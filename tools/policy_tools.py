@@ -67,71 +67,130 @@ def _headers() -> dict:
 # funciones públicas
 # ──────────────────────────────────────────────────────────────────────
 def list_policy_definitions(subscription_id: str | None = None) -> List[Dict[str, Any]]:
-    """Devuelve hasta 100 definiciones (built‑in + custom) de la suscripción."""
-    _, _, _, sub = _azure_env()
-    sub = subscription_id or sub
-    hdr = _headers()
+    """
+    Lista las definiciones de políticas disponibles en la suscripción.
 
-    # built‑in
-    builtin = requests.get(
-        "https://management.azure.com/providers/Microsoft.Authorization/policyDefinitions"
-        "?api-version=2021-06-01", headers=hdr, timeout=30).json().get("value", [])
+    Args:
+        subscription_id: ID de la suscripción (opcional).
 
-    # custom (a nivel de subs)
-    custom = requests.get(
-        f"https://management.azure.com/subscriptions/{sub}/providers/Microsoft.Authorization/policyDefinitions"
-        "?api-version=2021-06-01", headers=hdr, timeout=30).json().get("value", [])
-
-    return (builtin + custom)[:100]
-
+    Returns:
+        Lista de definiciones de políticas.
+    """
+    try:
+        if not subscription_id:
+            _, _, _, subscription_id = _azure_env()
+        headers = _headers()
+        url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.Authorization/policyDefinitions?api-version=2021-06-01"
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json().get("value", [])
+    except requests.RequestException as e:
+        print(f"Error al listar definiciones de políticas: {e}")
+        return []
 
 def get_policy_definition(policy_name: str) -> Dict[str, Any]:
-    """Busca por nombre (o displayName) y devuelve la definición completa."""
-    hdr = _headers()
-    for pol in list_policy_definitions():
-        if policy_name.lower() in pol.get("name", "").lower() or \
-           policy_name.lower() in pol.get("properties", {}).get("displayName", "").lower():
-            pol_id = pol["id"]
-            rsp = requests.get(f"https://management.azure.com{pol_id}?api-version=2021-06-01",
-                               headers=hdr, timeout=30)
-            rsp.raise_for_status()
-            return rsp.json()
-    raise ValueError(f"No se encontró definición que coincida con '{policy_name}'")
+    """
+    Recupera una definición de política por nombre o ID.
 
+    Args:
+        policy_name: Nombre o ID de la política.
+
+    Returns:
+        Definición de la política.
+    """
+    try:
+        headers = _headers()
+        url = f"https://management.azure.com/providers/Microsoft.Authorization/policyDefinitions/{policy_name}?api-version=2021-06-01"
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error al obtener la definición de la política: {e}")
+        return {}
 
 def assign_policy(policy_name: str, scope: str) -> Dict[str, Any]:
-    """Crea una asignación de la política indicada al `scope` (subs, RG…)."""
-    hdr           = _headers()
-    pol_def       = get_policy_definition(policy_name)
-    pol_def_id    = pol_def["id"]
-    display_name  = pol_def["properties"].get("displayName", policy_name)
-    assignment_id = f"assignment-{int(time.time())}"
+    """
+    Asigna una política a un scope específico.
 
-    url  = (f"https://management.azure.com{scope}"
-            f"/providers/Microsoft.Authorization/policyAssignments/{assignment_id}"
-            "?api-version=2021-06-01")
+    Args:
+        policy_name: Nombre o ID de la política.
+        scope: Scope al que se asignará la política.
 
-    body = {"properties": {
-                "displayName": f"Asignación de {display_name}",
-                "policyDefinitionId": pol_def_id,
-                "scope": scope
-           }}
-
-    rsp = requests.put(url, headers=hdr, json=body, timeout=30)
-    rsp.raise_for_status()
-    return rsp.json()
-
+    Returns:
+        Resultado de la asignación.
+    """
+    try:
+        headers = _headers()
+        url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/policyAssignments/{policy_name}?api-version=2021-06-01"
+        payload = {
+            "properties": {
+                "policyDefinitionId": f"/providers/Microsoft.Authorization/policyDefinitions/{policy_name}"
+            }
+        }
+        response = requests.put(url, headers=headers, json=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Error al asignar la política: {e}")
+        return {}
 
 def list_policy_assignments(subscription_id: str | None = None) -> List[Dict[str, Any]]:
-    """Lista asignaciones de política en la suscripción dada."""
-    _, _, _, sub = _azure_env()
-    sub = subscription_id or sub
-    hdr = _headers()
+    """
+    Lista las asignaciones de políticas en la suscripción.
 
-    url = (f"https://management.azure.com/subscriptions/{sub}"
-           "/providers/Microsoft.Authorization/policyAssignments"
-           "?api-version=2021-06-01")
-    rsp = requests.get(url, headers=hdr, timeout=30)
-    rsp.raise_for_status()
-    return rsp.json().get("value", [])
+    Args:
+        subscription_id: ID de la suscripción (opcional).
+
+    Returns:
+        Lista de asignaciones de políticas.
+    """
+    try:
+        if not subscription_id:
+            _, _, _, subscription_id = _azure_env()
+        headers = _headers()
+        url = f"https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.Authorization/policyAssignments?api-version=2021-06-01"
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json().get("value", [])
+    except requests.RequestException as e:
+        print(f"Error al listar asignaciones de políticas: {e}")
+        return []
+
+def save_report(report_name: str, content: str):
+    """
+    Guarda el contenido del informe en la carpeta `report`.
+
+    Args:
+        report_name: Nombre del archivo del informe.
+        content: Contenido del informe.
+    """
+    report_dir = os.path.join(os.getcwd(), "report")
+    os.makedirs(report_dir, exist_ok=True)
+    report_path = os.path.join(report_dir, report_name)
+    with open(report_path, "w", encoding="utf-8") as report_file:
+        report_file.write(content)
+    return report_path
+
+def generate_policy_report(definitions: list, assignments: list) -> str:
+    """
+    Genera un informe detallado de las políticas y asignaciones.
+
+    Args:
+        definitions: Lista de definiciones de políticas.
+        assignments: Lista de asignaciones de políticas.
+
+    Returns:
+        Nombre del archivo del informe generado.
+    """
+    report_content = """# Informe de Políticas de Azure\n\n## Definiciones de Políticas\n"""
+    for definition in definitions:
+        report_content += f"- {definition.get('displayName', 'Sin nombre')}\n"
+
+    report_content += "\n## Asignaciones de Políticas\n"
+    for assignment in assignments:
+        report_content += f"- {assignment.get('name', 'Sin nombre')}\n"
+
+    report_name = "policy_report.md"
+    save_report(report_name, report_content)
+    return report_name
 
