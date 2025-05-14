@@ -2,7 +2,7 @@
 
 # Global Azure 2025 - Securizando Azure con AI Foundry y Zero Trust
 
-**Landing Zone Express** es una solución multi-agente diseñada para simplificar y automatizar el despliegue de infraestructuras empresariales en Azure, aplicando principios de Zero Trust. Esta herramienta combina la potencia de Bicep, Azure CLI y agentes generativos basados en OpenAI para garantizar un entorno seguro, escalable y fácil de gestionar.
+**Zero Trust Autogen** es una solución multi-agente diseñada para simplificar y automatizar el despliegue de infraestructuras empresariales en Azure con Landing Zones, aplicando principios de Zero Trust. Esta herramienta combina la potencia de Bicep, Azure CLI y agentes generativos basados en OpenAI para garantizar un entorno seguro, escalable y fácil de gestionar.
 
 > Demo oficial para la sesión **"Securizando Azure con AI Foundry y Zero Trust"** – Global Azure 2025 (Madrid) por **Alejandro Almeida, Microsoft MVP Azure & AI**.
 
@@ -47,7 +47,7 @@
           └────────┬─────────┘  │  RBAC)     │ │  └──────────┬────────┘
                    │            └─────┬──────┘ │             │
           ┌────────▼─────────┐        │        │    ┌────────▼─────────┐
-          │ Azure Resources  │◀──────┘         └──▶│  Markdown Report │
+          │ Azure Resources  │◀───────┘        └───▶│  Markdown Report │
           │  (Landing Zone)  │                      │  + GitHub Issue  │
           └──────────────────┘                      └──────────────────┘
 ```
